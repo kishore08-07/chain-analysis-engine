@@ -24,7 +24,8 @@
       "p2wsh": 16582,
       "p2sh": 38169,
       "p2tr": 203377,
-      "unknown": 218
+      "multisig": 214,
+      "unknown": 4
     },
     "fee_rate_stats": {
       "min_sat_vb": 0.0,
@@ -34,9 +35,9 @@
     },
     "classification_distribution": {
       "unknown": 84,
-      "simple_payment": 179233,
+      "simple_payment": 176982,
       "batch_payment": 16845,
-      "consolidation": 9388,
+      "consolidation": 11639,
       "self_transfer": 49941,
       "coinjoin": 1032
     },
@@ -78,7 +79,7 @@
           "p2wsh": 316,
           "p2sh": 804,
           "p2tr": 2024,
-          "unknown": 4
+          "multisig": 4
         },
         "fee_rate_stats": {
           "min_sat_vb": 1.0,
@@ -88,9 +89,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1779,
+          "simple_payment": 1738,
           "batch_payment": 315,
-          "consolidation": 149,
+          "consolidation": 190,
           "self_transfer": 791,
           "coinjoin": 21
         },
@@ -1568,7 +1569,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 5,
           "output_count": 2,
           "fee_rate_sat_vb": 18.77,
@@ -14614,7 +14615,7 @@
               "confidence": "medium"
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 5.0,
@@ -14827,7 +14828,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 4,
           "output_count": 3,
           "fee_rate_sat_vb": 5.0,
@@ -19263,7 +19264,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 4.51,
@@ -23598,7 +23599,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 4.03,
@@ -25090,7 +25091,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 5,
           "output_count": 2,
           "fee_rate_sat_vb": 4.01,
@@ -25624,7 +25625,7 @@
               "confidence": "medium"
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 5,
           "output_count": 2,
           "fee_rate_sat_vb": 4.0,
@@ -30907,7 +30908,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 5,
           "output_count": 2,
           "fee_rate_sat_vb": 4.0,
@@ -43201,7 +43202,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 4,
           "output_count": 2,
           "fee_rate_sat_vb": 3.61,
@@ -44950,7 +44951,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 3.49,
@@ -47015,7 +47016,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 14.24,
@@ -47963,7 +47964,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 3.29,
@@ -48628,7 +48629,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 3.74,
@@ -49496,7 +49497,7 @@
               "confidence": "medium"
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 4,
           "output_count": 2,
           "fee_rate_sat_vb": 3.14,
@@ -51020,7 +51021,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 3.05,
@@ -51142,7 +51143,7 @@
               "confidence": "medium"
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 4,
           "output_count": 2,
           "fee_rate_sat_vb": 3.05,
@@ -51814,7 +51815,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 3.04,
@@ -51984,7 +51985,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 3.03,
@@ -52745,7 +52746,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 3.02,
@@ -58518,7 +58519,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 3.0,
@@ -60225,7 +60226,7 @@
               "confidence": "medium"
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 3,
           "fee_rate_sat_vb": 3.0,
@@ -64844,7 +64845,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 5,
           "output_count": 2,
           "fee_rate_sat_vb": 9.42,
@@ -65684,7 +65685,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 3.16,
@@ -67782,7 +67783,7 @@
               "confidence": "medium"
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 2.45,
@@ -67957,7 +67958,7 @@
               "confidence": "medium"
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 4,
           "output_count": 2,
           "fee_rate_sat_vb": 2.41,
@@ -68259,7 +68260,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 2.41,
@@ -72953,7 +72954,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 2.25,
@@ -73413,7 +73414,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 4,
           "output_count": 2,
           "fee_rate_sat_vb": 2.25,
@@ -73457,7 +73458,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 2.25,
@@ -75413,7 +75414,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 2.19,
@@ -76390,7 +76391,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 4,
           "output_count": 2,
           "fee_rate_sat_vb": 4.67,
@@ -88644,7 +88645,7 @@
               "confidence": "medium"
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 2.0,
@@ -96048,7 +96049,7 @@
               "confidence": "medium"
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 2.0,
@@ -96459,7 +96460,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 5,
           "output_count": 2,
           "fee_rate_sat_vb": 2.0,
@@ -96916,7 +96917,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 2.0,
@@ -99202,7 +99203,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 5,
           "output_count": 2,
           "fee_rate_sat_vb": 2.0,
@@ -101118,7 +101119,7 @@
               "confidence": "medium"
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 2.0,
@@ -101204,7 +101205,7 @@
               "confidence": "medium"
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 2.0,
@@ -108556,7 +108557,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 3,
           "output_count": 2,
           "fee_rate_sat_vb": 1.33,
@@ -111041,7 +111042,7 @@
               "detected": false
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 4,
           "output_count": 2,
           "fee_rate_sat_vb": 1.23,
@@ -111086,7 +111087,7 @@
               "confidence": "medium"
             }
           },
-          "classification": "simple_payment",
+          "classification": "consolidation",
           "input_count": 5,
           "output_count": 2,
           "fee_rate_sat_vb": 1.21,
@@ -126031,10 +126032,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1922,
+          "simple_payment": 1852,
           "self_transfer": 1371,
           "batch_payment": 413,
-          "consolidation": 255,
+          "consolidation": 325,
           "coinjoin": 19
         },
         "heuristic_detection_counts": {
@@ -126086,9 +126087,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1918,
+          "simple_payment": 1856,
           "self_transfer": 1423,
-          "consolidation": 244,
+          "consolidation": 306,
           "batch_payment": 352,
           "coinjoin": 22
         },
@@ -126141,8 +126142,8 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 245,
-          "consolidation": 15,
+          "simple_payment": 241,
+          "consolidation": 19,
           "self_transfer": 54,
           "batch_payment": 126,
           "coinjoin": 2
@@ -126187,7 +126188,7 @@
           "p2wpkh": 2413,
           "p2sh": 361,
           "p2tr": 2034,
-          "unknown": 2
+          "multisig": 2
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.0,
@@ -126197,9 +126198,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 831,
+          "simple_payment": 813,
           "self_transfer": 416,
-          "consolidation": 92,
+          "consolidation": 110,
           "batch_payment": 215,
           "coinjoin": 11
         },
@@ -126252,10 +126253,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1326,
+          "simple_payment": 1283,
           "self_transfer": 1148,
           "batch_payment": 301,
-          "consolidation": 179,
+          "consolidation": 222,
           "coinjoin": 11
         },
         "heuristic_detection_counts": {
@@ -126307,10 +126308,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1336,
+          "simple_payment": 1296,
           "batch_payment": 285,
           "self_transfer": 930,
-          "consolidation": 143,
+          "consolidation": 183,
           "coinjoin": 16
         },
         "heuristic_detection_counts": {
@@ -126363,9 +126364,9 @@
         "classification_distribution": {
           "unknown": 1,
           "self_transfer": 1365,
-          "simple_payment": 1654,
+          "simple_payment": 1584,
           "batch_payment": 557,
-          "consolidation": 166,
+          "consolidation": 236,
           "coinjoin": 9
         },
         "heuristic_detection_counts": {
@@ -126417,10 +126418,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1539,
+          "simple_payment": 1504,
           "batch_payment": 262,
           "self_transfer": 912,
-          "consolidation": 196,
+          "consolidation": 231,
           "coinjoin": 20
         },
         "heuristic_detection_counts": {
@@ -126472,9 +126473,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "consolidation": 102,
+          "consolidation": 137,
           "self_transfer": 607,
-          "simple_payment": 2521,
+          "simple_payment": 2486,
           "batch_payment": 207,
           "coinjoin": 11
         },
@@ -126527,10 +126528,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1832,
+          "simple_payment": 1780,
           "self_transfer": 1396,
           "batch_payment": 397,
-          "consolidation": 194,
+          "consolidation": 246,
           "coinjoin": 6
         },
         "heuristic_detection_counts": {
@@ -126584,8 +126585,8 @@
           "unknown": 1,
           "self_transfer": 860,
           "batch_payment": 364,
-          "simple_payment": 1418,
-          "consolidation": 178,
+          "simple_payment": 1374,
+          "consolidation": 222,
           "coinjoin": 27
         },
         "heuristic_detection_counts": {
@@ -126637,10 +126638,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 577,
+          "simple_payment": 566,
           "self_transfer": 301,
+          "consolidation": 69,
           "batch_payment": 111,
-          "consolidation": 58,
           "coinjoin": 8
         },
         "heuristic_detection_counts": {
@@ -126683,7 +126684,7 @@
           "p2tr": 2103,
           "p2sh": 466,
           "p2wsh": 181,
-          "unknown": 2
+          "multisig": 2
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.0,
@@ -126693,10 +126694,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1395,
+          "simple_payment": 1359,
           "self_transfer": 645,
           "batch_payment": 221,
-          "consolidation": 125,
+          "consolidation": 161,
           "coinjoin": 45
         },
         "heuristic_detection_counts": {
@@ -126749,10 +126750,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 2002,
+          "simple_payment": 1957,
           "self_transfer": 1373,
           "batch_payment": 365,
-          "consolidation": 208,
+          "consolidation": 253,
           "coinjoin": 28
         },
         "heuristic_detection_counts": {
@@ -126805,9 +126806,9 @@
         "classification_distribution": {
           "unknown": 1,
           "batch_payment": 228,
-          "simple_payment": 1158,
+          "simple_payment": 1123,
           "self_transfer": 691,
-          "consolidation": 118,
+          "consolidation": 153,
           "coinjoin": 6
         },
         "heuristic_detection_counts": {
@@ -126860,9 +126861,9 @@
         "classification_distribution": {
           "unknown": 1,
           "self_transfer": 51,
-          "consolidation": 12,
+          "consolidation": 14,
           "batch_payment": 12,
-          "simple_payment": 63
+          "simple_payment": 61
         },
         "heuristic_detection_counts": {
           "self_transfer": 58,
@@ -126903,7 +126904,7 @@
           "p2wsh": 374,
           "p2sh": 755,
           "p2tr": 1990,
-          "unknown": 6
+          "multisig": 6
         },
         "fee_rate_stats": {
           "min_sat_vb": 1.0,
@@ -126914,8 +126915,8 @@
         "classification_distribution": {
           "unknown": 1,
           "batch_payment": 299,
-          "consolidation": 180,
-          "simple_payment": 1662,
+          "consolidation": 221,
+          "simple_payment": 1621,
           "self_transfer": 862,
           "coinjoin": 17
         },
@@ -126968,10 +126969,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1539,
+          "simple_payment": 1500,
           "batch_payment": 314,
           "self_transfer": 1130,
-          "consolidation": 194,
+          "consolidation": 233,
           "coinjoin": 9
         },
         "heuristic_detection_counts": {
@@ -127023,8 +127024,8 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1628,
-          "consolidation": 172,
+          "simple_payment": 1573,
+          "consolidation": 227,
           "self_transfer": 885,
           "batch_payment": 227,
           "coinjoin": 29
@@ -127069,7 +127070,7 @@
           "p2wpkh": 3712,
           "p2pkh": 367,
           "p2tr": 2618,
-          "unknown": 4
+          "multisig": 4
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.4,
@@ -127079,10 +127080,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 2519,
+          "simple_payment": 2506,
           "self_transfer": 344,
+          "consolidation": 98,
           "batch_payment": 129,
-          "consolidation": 85,
           "coinjoin": 10
         },
         "heuristic_detection_counts": {
@@ -127135,9 +127136,9 @@
         "classification_distribution": {
           "unknown": 3,
           "batch_payment": 290,
-          "consolidation": 157,
+          "consolidation": 193,
           "self_transfer": 631,
-          "simple_payment": 1084,
+          "simple_payment": 1048,
           "coinjoin": 10
         },
         "heuristic_detection_counts": {
@@ -127189,9 +127190,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 2570,
+          "simple_payment": 2548,
           "self_transfer": 622,
-          "consolidation": 134,
+          "consolidation": 156,
           "batch_payment": 208,
           "coinjoin": 19
         },
@@ -127235,7 +127236,7 @@
           "p2pkh": 194,
           "p2sh": 270,
           "p2tr": 2289,
-          "unknown": 2
+          "multisig": 2
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.0,
@@ -127247,8 +127248,8 @@
           "unknown": 1,
           "self_transfer": 325,
           "batch_payment": 132,
-          "simple_payment": 1657,
-          "consolidation": 134,
+          "simple_payment": 1648,
+          "consolidation": 143,
           "coinjoin": 13
         },
         "heuristic_detection_counts": {
@@ -127300,8 +127301,8 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1473,
-          "consolidation": 172,
+          "simple_payment": 1438,
+          "consolidation": 207,
           "self_transfer": 946,
           "batch_payment": 289,
           "coinjoin": 39
@@ -127355,10 +127356,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1343,
+          "simple_payment": 1302,
           "batch_payment": 271,
           "self_transfer": 947,
-          "consolidation": 183,
+          "consolidation": 224,
           "coinjoin": 17
         },
         "heuristic_detection_counts": {
@@ -127411,9 +127412,9 @@
         "classification_distribution": {
           "unknown": 1,
           "self_transfer": 372,
-          "simple_payment": 815,
+          "simple_payment": 800,
+          "consolidation": 90,
           "batch_payment": 112,
-          "consolidation": 75,
           "coinjoin": 7
         },
         "heuristic_detection_counts": {
@@ -127466,8 +127467,8 @@
         "classification_distribution": {
           "unknown": 1,
           "self_transfer": 248,
-          "consolidation": 30,
-          "simple_payment": 287,
+          "consolidation": 37,
+          "simple_payment": 280,
           "batch_payment": 60,
           "coinjoin": 1
         },
@@ -127520,10 +127521,10 @@
         },
         "classification_distribution": {
           "unknown": 2,
-          "simple_payment": 1477,
+          "simple_payment": 1437,
           "batch_payment": 298,
           "self_transfer": 1032,
-          "consolidation": 172,
+          "consolidation": 212,
           "coinjoin": 30
         },
         "heuristic_detection_counts": {
@@ -127566,7 +127567,7 @@
           "p2pkh": 587,
           "p2tr": 1045,
           "p2wsh": 196,
-          "unknown": 2
+          "multisig": 2
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.0,
@@ -127576,9 +127577,9 @@
         },
         "classification_distribution": {
           "unknown": 2,
-          "simple_payment": 1081,
+          "simple_payment": 1048,
           "self_transfer": 791,
-          "consolidation": 131,
+          "consolidation": 164,
           "batch_payment": 228,
           "coinjoin": 10
         },
@@ -127621,7 +127622,7 @@
           "p2pkh": 121,
           "p2wpkh": 2990,
           "p2sh": 91,
-          "unknown": 4,
+          "multisig": 4,
           "p2tr": 3621
         },
         "fee_rate_stats": {
@@ -127632,10 +127633,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 3039,
+          "simple_payment": 3036,
           "self_transfer": 145,
           "batch_payment": 66,
-          "consolidation": 37,
+          "consolidation": 40,
           "coinjoin": 5
         },
         "heuristic_detection_counts": {
@@ -127688,8 +127689,8 @@
         "classification_distribution": {
           "unknown": 2,
           "self_transfer": 1287,
-          "consolidation": 192,
-          "simple_payment": 1797,
+          "consolidation": 244,
+          "simple_payment": 1745,
           "batch_payment": 399,
           "coinjoin": 5
         },
@@ -127733,7 +127734,7 @@
           "p2pkh": 42,
           "p2wsh": 15,
           "p2tr": 4705,
-          "unknown": 2
+          "multisig": 2
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.5,
@@ -127743,10 +127744,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 4296,
+          "simple_payment": 4290,
           "batch_payment": 36,
           "self_transfer": 51,
-          "consolidation": 36,
+          "consolidation": 42,
           "coinjoin": 5
         },
         "heuristic_detection_counts": {
@@ -127848,8 +127849,8 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 4024,
-          "consolidation": 39,
+          "simple_payment": 4013,
+          "consolidation": 50,
           "batch_payment": 86,
           "self_transfer": 218,
           "coinjoin": 8
@@ -127904,8 +127905,8 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1554,
-          "consolidation": 209,
+          "simple_payment": 1508,
+          "consolidation": 255,
           "self_transfer": 1245,
           "batch_payment": 334,
           "coinjoin": 6
@@ -127960,9 +127961,9 @@
         "classification_distribution": {
           "unknown": 1,
           "batch_payment": 492,
-          "simple_payment": 1653,
+          "simple_payment": 1606,
           "self_transfer": 1307,
-          "consolidation": 263,
+          "consolidation": 310,
           "coinjoin": 7
         },
         "heuristic_detection_counts": {
@@ -128014,9 +128015,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 3893,
+          "simple_payment": 3866,
           "self_transfer": 383,
-          "consolidation": 92,
+          "consolidation": 119,
           "batch_payment": 158,
           "coinjoin": 5
         },
@@ -128070,8 +128071,8 @@
         "classification_distribution": {
           "unknown": 1,
           "self_transfer": 398,
-          "simple_payment": 3040,
-          "consolidation": 57,
+          "simple_payment": 3020,
+          "consolidation": 77,
           "batch_payment": 110,
           "coinjoin": 14
         },
@@ -128125,9 +128126,9 @@
         "classification_distribution": {
           "unknown": 1,
           "self_transfer": 258,
-          "simple_payment": 4223,
+          "simple_payment": 4213,
           "batch_payment": 104,
-          "consolidation": 56,
+          "consolidation": 66,
           "coinjoin": 12
         },
         "heuristic_detection_counts": {
@@ -128231,10 +128232,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1282,
+          "simple_payment": 1252,
           "batch_payment": 228,
           "self_transfer": 676,
-          "consolidation": 127,
+          "consolidation": 157,
           "coinjoin": 26
         },
         "heuristic_detection_counts": {
@@ -128277,7 +128278,7 @@
           "p2tr": 3273,
           "p2wpkh": 3382,
           "p2sh": 549,
-          "unknown": 2
+          "multisig": 2
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.0,
@@ -128287,9 +128288,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1967,
+          "simple_payment": 1935,
           "self_transfer": 528,
-          "consolidation": 188,
+          "consolidation": 220,
           "batch_payment": 281,
           "coinjoin": 30
         },
@@ -128333,7 +128334,7 @@
           "p2pkh": 75,
           "p2sh": 72,
           "p2tr": 5661,
-          "unknown": 4
+          "multisig": 4
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.5,
@@ -128345,8 +128346,8 @@
           "unknown": 1,
           "batch_payment": 52,
           "self_transfer": 123,
-          "consolidation": 41,
-          "simple_payment": 4798,
+          "consolidation": 51,
+          "simple_payment": 4788,
           "coinjoin": 2
         },
         "heuristic_detection_counts": {
@@ -128400,8 +128401,8 @@
           "unknown": 1,
           "self_transfer": 185,
           "batch_payment": 84,
-          "simple_payment": 4173,
-          "consolidation": 39,
+          "simple_payment": 4159,
+          "consolidation": 53,
           "coinjoin": 4
         },
         "heuristic_detection_counts": {
@@ -128453,10 +128454,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 3525,
+          "simple_payment": 3501,
           "batch_payment": 199,
           "self_transfer": 347,
-          "consolidation": 92,
+          "consolidation": 116,
           "coinjoin": 10
         },
         "heuristic_detection_counts": {
@@ -128508,10 +128509,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1500,
+          "simple_payment": 1466,
           "batch_payment": 318,
           "self_transfer": 966,
-          "consolidation": 183,
+          "consolidation": 217,
           "coinjoin": 14
         },
         "heuristic_detection_counts": {
@@ -128563,9 +128564,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 3001,
+          "simple_payment": 2977,
           "self_transfer": 403,
-          "consolidation": 101,
+          "consolidation": 125,
           "batch_payment": 222,
           "coinjoin": 6
         },
@@ -128619,9 +128620,9 @@
         "classification_distribution": {
           "unknown": 1,
           "batch_payment": 261,
-          "simple_payment": 1628,
+          "simple_payment": 1569,
           "self_transfer": 1040,
-          "consolidation": 198,
+          "consolidation": 257,
           "coinjoin": 10
         },
         "heuristic_detection_counts": {
@@ -128673,8 +128674,8 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1835,
-          "consolidation": 234,
+          "simple_payment": 1792,
+          "consolidation": 277,
           "self_transfer": 1336,
           "batch_payment": 220,
           "coinjoin": 13
@@ -128719,7 +128720,7 @@
           "p2wsh": 49,
           "p2sh": 122,
           "p2tr": 4085,
-          "unknown": 2
+          "multisig": 2
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.0,
@@ -128729,10 +128730,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 4158,
+          "simple_payment": 4150,
           "self_transfer": 201,
+          "consolidation": 42,
           "batch_payment": 61,
-          "consolidation": 34,
           "coinjoin": 9
         },
         "heuristic_detection_counts": {
@@ -128784,10 +128785,10 @@
         },
         "classification_distribution": {
           "unknown": 2,
-          "simple_payment": 1326,
+          "simple_payment": 1279,
           "batch_payment": 293,
           "self_transfer": 576,
-          "consolidation": 177,
+          "consolidation": 224,
           "coinjoin": 44
         },
         "heuristic_detection_counts": {
@@ -128839,9 +128840,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 2847,
+          "consolidation": 153,
           "self_transfer": 529,
-          "consolidation": 123,
+          "simple_payment": 2817,
           "batch_payment": 271,
           "coinjoin": 9
         },
@@ -128885,7 +128886,7 @@
           "p2tr": 6886,
           "p2pkh": 219,
           "p2sh": 130,
-          "unknown": 14
+          "multisig": 14
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.6,
@@ -128897,8 +128898,8 @@
           "unknown": 1,
           "batch_payment": 104,
           "self_transfer": 175,
-          "simple_payment": 4552,
-          "consolidation": 31,
+          "simple_payment": 4542,
+          "consolidation": 41,
           "coinjoin": 6
         },
         "heuristic_detection_counts": {
@@ -128952,8 +128953,8 @@
           "unknown": 1,
           "batch_payment": 329,
           "self_transfer": 721,
-          "simple_payment": 1942,
-          "consolidation": 157,
+          "simple_payment": 1898,
+          "consolidation": 201,
           "coinjoin": 27
         },
         "heuristic_detection_counts": {
@@ -129005,10 +129006,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 2870,
+          "consolidation": 194,
           "batch_payment": 188,
           "self_transfer": 619,
-          "consolidation": 172,
+          "simple_payment": 2848,
           "coinjoin": 13
         },
         "heuristic_detection_counts": {
@@ -129051,7 +129052,7 @@
           "p2wpkh": 7432,
           "p2wsh": 639,
           "p2tr": 1286,
-          "unknown": 6
+          "multisig": 6
         },
         "fee_rate_stats": {
           "min_sat_vb": 1.0,
@@ -129063,8 +129064,8 @@
           "unknown": 1,
           "batch_payment": 488,
           "self_transfer": 1213,
-          "simple_payment": 1726,
-          "consolidation": 247,
+          "simple_payment": 1657,
+          "consolidation": 316,
           "coinjoin": 17
         },
         "heuristic_detection_counts": {
@@ -129118,8 +129119,8 @@
           "unknown": 1,
           "batch_payment": 494,
           "self_transfer": 900,
-          "simple_payment": 1649,
-          "consolidation": 234,
+          "simple_payment": 1591,
+          "consolidation": 292,
           "coinjoin": 15
         },
         "heuristic_detection_counts": {
@@ -129162,7 +129163,7 @@
           "p2pkh": 409,
           "p2wsh": 167,
           "p2tr": 5256,
-          "unknown": 6
+          "multisig": 6
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.0,
@@ -129173,9 +129174,9 @@
         "classification_distribution": {
           "unknown": 1,
           "batch_payment": 207,
-          "simple_payment": 3680,
+          "simple_payment": 3648,
           "self_transfer": 378,
-          "consolidation": 107,
+          "consolidation": 139,
           "coinjoin": 11
         },
         "heuristic_detection_counts": {
@@ -129218,7 +129219,7 @@
           "p2wsh": 227,
           "p2pkh": 542,
           "p2tr": 3110,
-          "unknown": 80
+          "multisig": 80
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.0,
@@ -129228,10 +129229,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 2775,
+          "simple_payment": 2743,
           "self_transfer": 582,
           "batch_payment": 287,
-          "consolidation": 145,
+          "consolidation": 177,
           "coinjoin": 18
         },
         "heuristic_detection_counts": {
@@ -129283,10 +129284,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 3023,
+          "simple_payment": 2996,
           "self_transfer": 370,
           "batch_payment": 142,
-          "consolidation": 94,
+          "consolidation": 121,
           "coinjoin": 15
         },
         "heuristic_detection_counts": {
@@ -129329,7 +129330,7 @@
           "p2sh": 201,
           "p2pkh": 256,
           "p2tr": 4313,
-          "unknown": 34
+          "multisig": 34
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.9,
@@ -129339,9 +129340,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 4215,
+          "simple_payment": 4195,
           "self_transfer": 260,
-          "consolidation": 54,
+          "consolidation": 74,
           "batch_payment": 133,
           "coinjoin": 8
         },
@@ -129394,10 +129395,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 2484,
+          "simple_payment": 2463,
           "batch_payment": 162,
           "self_transfer": 500,
-          "consolidation": 90,
+          "consolidation": 111,
           "coinjoin": 11
         },
         "heuristic_detection_counts": {
@@ -129449,9 +129450,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 4252,
+          "simple_payment": 4242,
           "self_transfer": 219,
-          "consolidation": 62,
+          "consolidation": 72,
           "batch_payment": 102,
           "coinjoin": 9
         },
@@ -129495,7 +129496,7 @@
           "p2sh": 161,
           "p2pkh": 450,
           "p2tr": 3377,
-          "unknown": 2
+          "multisig": 2
         },
         "fee_rate_stats": {
           "min_sat_vb": 1.0,
@@ -129506,8 +129507,8 @@
         "classification_distribution": {
           "unknown": 1,
           "batch_payment": 121,
-          "simple_payment": 2685,
-          "consolidation": 63,
+          "simple_payment": 2670,
+          "consolidation": 78,
           "self_transfer": 526,
           "coinjoin": 8
         },
@@ -129550,7 +129551,7 @@
           "p2wpkh": 4654,
           "p2wsh": 43,
           "p2tr": 4483,
-          "unknown": 2,
+          "multisig": 2,
           "p2pkh": 139
         },
         "fee_rate_stats": {
@@ -129562,10 +129563,10 @@
         "classification_distribution": {
           "unknown": 1,
           "self_transfer": 57,
-          "simple_payment": 4256,
+          "simple_payment": 4255,
           "batch_payment": 19,
           "coinjoin": 3,
-          "consolidation": 10
+          "consolidation": 11
         },
         "heuristic_detection_counts": {
           "self_transfer": 60,
@@ -129607,7 +129608,7 @@
           "p2sh": 284,
           "p2pkh": 283,
           "p2tr": 3785,
-          "unknown": 18
+          "multisig": 18
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.4,
@@ -129617,10 +129618,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 3441,
+          "simple_payment": 3411,
           "self_transfer": 509,
           "batch_payment": 164,
-          "consolidation": 94,
+          "consolidation": 124,
           "coinjoin": 17
         },
         "heuristic_detection_counts": {
@@ -129663,7 +129664,7 @@
           "p2wsh": 79,
           "p2pkh": 216,
           "p2tr": 3478,
-          "unknown": 8
+          "multisig": 8
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.0,
@@ -129673,9 +129674,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 3409,
+          "simple_payment": 3392,
           "self_transfer": 286,
-          "consolidation": 80,
+          "consolidation": 97,
           "batch_payment": 104,
           "coinjoin": 7
         },
@@ -129719,7 +129720,7 @@
           "p2tr": 1928,
           "p2wsh": 352,
           "p2pkh": 3898,
-          "unknown": 2
+          "multisig": 2
         },
         "fee_rate_stats": {
           "min_sat_vb": 1.1,
@@ -129730,9 +129731,9 @@
         "classification_distribution": {
           "unknown": 1,
           "batch_payment": 342,
-          "simple_payment": 1194,
+          "simple_payment": 1158,
           "self_transfer": 597,
-          "consolidation": 175,
+          "consolidation": 211,
           "coinjoin": 11
         },
         "heuristic_detection_counts": {
@@ -129784,10 +129785,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 3144,
+          "simple_payment": 3103,
           "self_transfer": 917,
           "batch_payment": 306,
-          "consolidation": 153,
+          "consolidation": 194,
           "coinjoin": 20
         },
         "heuristic_detection_counts": {
@@ -129839,8 +129840,8 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 4648,
-          "consolidation": 29,
+          "simple_payment": 4642,
+          "consolidation": 35,
           "self_transfer": 120,
           "batch_payment": 63
         },
@@ -129892,9 +129893,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 2008,
+          "simple_payment": 1994,
           "self_transfer": 2502,
-          "consolidation": 59,
+          "consolidation": 73,
           "batch_payment": 93,
           "coinjoin": 21
         },
@@ -129938,7 +129939,7 @@
           "p2wsh": 88,
           "p2pkh": 148,
           "p2tr": 4844,
-          "unknown": 4
+          "multisig": 4
         },
         "fee_rate_stats": {
           "min_sat_vb": 0.0,
@@ -129948,9 +129949,9 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 4333,
+          "simple_payment": 4326,
           "self_transfer": 189,
-          "consolidation": 51,
+          "consolidation": 58,
           "batch_payment": 109,
           "coinjoin": 7
         },
@@ -130058,8 +130059,8 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 1188,
-          "consolidation": 144,
+          "simple_payment": 1147,
+          "consolidation": 185,
           "self_transfer": 904,
           "batch_payment": 282,
           "coinjoin": 3
@@ -130104,7 +130105,7 @@
           "p2wpkh": 3742,
           "p2wsh": 234,
           "p2tr": 2953,
-          "unknown": 2
+          "multisig": 2
         },
         "fee_rate_stats": {
           "min_sat_vb": 1.0,
@@ -130115,9 +130116,9 @@
         "classification_distribution": {
           "unknown": 1,
           "batch_payment": 251,
-          "simple_payment": 2244,
+          "simple_payment": 2215,
           "self_transfer": 593,
-          "consolidation": 133,
+          "consolidation": 162,
           "coinjoin": 18
         },
         "heuristic_detection_counts": {
@@ -130169,10 +130170,10 @@
         },
         "classification_distribution": {
           "unknown": 1,
-          "simple_payment": 2536,
+          "simple_payment": 2500,
           "self_transfer": 691,
           "batch_payment": 269,
-          "consolidation": 131,
+          "consolidation": 167,
           "coinjoin": 33
         },
         "heuristic_detection_counts": {
@@ -130225,9 +130226,9 @@
         "classification_distribution": {
           "unknown": 1,
           "batch_payment": 216,
-          "simple_payment": 3663,
+          "simple_payment": 3636,
           "self_transfer": 417,
-          "consolidation": 97,
+          "consolidation": 124,
           "coinjoin": 16
         },
         "heuristic_detection_counts": {
