@@ -88,6 +88,13 @@ def apply(tx):
                 spk = prevout['script_pubkey_hex']
                 input_ids.add(spk)
                 input_id_list.append(spk)
+            else:
+                prev_txid = inp.get('txid')
+                prev_vout = inp.get('vout')
+                if prev_txid is not None and prev_vout is not None:
+                    outpoint = f"{prev_txid}:{prev_vout}"
+                    input_ids.add(outpoint)
+                    input_id_list.append(outpoint)
 
     # Collect output identifiers
     output_ids = set()

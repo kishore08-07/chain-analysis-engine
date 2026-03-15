@@ -12,6 +12,8 @@ Detection criteria:
   - High input-to-output ratio
 """
 
+from .config import CONSOLIDATION_MIN_INPUTS
+
 
 def apply(tx):
     """
@@ -33,7 +35,7 @@ def apply(tx):
 
     n_spendable = len(spendable)
 
-    if n_inputs < 3 or n_spendable > 2:
+    if n_inputs < CONSOLIDATION_MIN_INPUTS or n_spendable > 2:
         return {'detected': False}
 
     # Check if outputs match input script types

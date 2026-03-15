@@ -13,6 +13,8 @@ Detection criteria:
 Reference: Maxwell, "CoinJoin: Bitcoin privacy for the real world" (2013)
 """
 
+from .config import COINJOIN_MIN_EQUAL_OUTPUTS, COINJOIN_MIN_INPUTS
+
 
 def apply(tx):
     """
@@ -33,7 +35,7 @@ def apply(tx):
                  if o.get('script_type', 'unknown') != 'op_return'
                  and o.get('value_sats', 0) > 0]
 
-    if n_inputs < 3 or len(spendable) < 3:
+    if n_inputs < COINJOIN_MIN_INPUTS or len(spendable) < COINJOIN_MIN_EQUAL_OUTPUTS:
         return {'detected': False}
 
     # Count output value frequencies
@@ -49,10 +51,9 @@ def apply(tx):
     max_equal_value = max(value_counts, key=value_counts.get)
     max_equal_count = value_counts[max_equal_value]
 
-    # CoinJoin: at least 3 equal-value outputs
-    if max_equal_count >= 3:
+    if max_equal_count >= COINJOIN_MIN_EQUAL_OUTPUTS:
         # False positive filter: equal outputs should be a meaningful fraction
-        # of total outputs (not just 3 dust outputs in a batch payment)
+        # of total outputs (not just 2 dust outputs in a batch payment)
         equal_ratio = max_equal_count / len(spendable)
 
         # Filter: if equal outputs are very small relative to total output value,
@@ -66,6 +67,13 @@ def apply(tx):
         if value_ratio < 0.1 and equal_ratio < 0.3:
             return {'detected': False}
 
+        # Additional filter for 2-party CoinJoins: require stronger signals
+        if max_equal_count == 2:
+            # 2 equal outputs is very common in normal transactions;
+            # require higher value_ratio and equal_ratio to reduce false positives
+            if value_ratio < 0.3 or equal_ratio < 0.4:
+                return {'detected': False}
+
         # Check diverse input script types (different participants)
         input_types = set()
         for inp in vin:
@@ -73,13 +81,15 @@ def apply(tx):
             if stype not in ('unknown', 'coinbase'):
                 input_types.add(stype)
 
-        # Strong CoinJoin signal: many equal outputs, many inputs, significant value
+        # Graduated confidence based on equal count and input count
         if max_equal_count >= 5 and n_inputs >= 5:
             confidence = 'high'
-        elif equal_ratio >= 0.5 and n_inputs >= max_equal_count:
+        elif max_equal_count >= 3 and equal_ratio >= 0.5 and n_inputs >= max_equal_count:
             confidence = 'high'
-        else:
+        elif max_equal_count >= 3:
             confidence = 'medium'
+        else:
+            confidence = 'low'  # 2-party CoinJoin
 
         return {
             'detected': True,

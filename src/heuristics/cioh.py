@@ -28,16 +28,37 @@ def apply(tx):
     if n_inputs <= 1:
         return {'detected': False}
 
-    # Collect unique addresses from inputs
-    addresses = set()
+    # Collect unique input identifiers.
+    # Priority: address -> prevout script_pubkey_hex -> outpoint (txid:vout).
+    # Outpoint fallback is weaker than address/script identity but avoids
+    # systematic undercount in lean mode when prevouts are unavailable.
+    input_ids = set()
+    used_outpoint_fallback = False
     for inp in vin:
         addr = inp.get('address')
         if addr:
-            addresses.add(addr)
+            input_ids.add(addr)
+            continue
 
-    return {
+        prevout = inp.get('prevout')
+        if prevout and prevout.get('script_pubkey_hex'):
+            input_ids.add(prevout['script_pubkey_hex'])
+            continue
+
+        prev_txid = inp.get('txid')
+        prev_vout = inp.get('vout')
+        if prev_txid is not None and prev_vout is not None:
+            input_ids.add(f"{prev_txid}:{prev_vout}")
+            used_outpoint_fallback = True
+
+    result = {
         'detected': True,
         'input_count': n_inputs,
-        'unique_addresses': len(addresses),
+        'unique_addresses': len(input_ids),
         'confidence': 'high' if n_inputs >= 3 else 'medium'
     }
+
+    if used_outpoint_fallback:
+        result['approximate_identifiers'] = True
+
+    return result

@@ -28,6 +28,7 @@ blk*.dat + rev*.dat + xor.dat
 **Key design decisions:**
 - Pure Python 3 with zero external dependencies (no pip install needed)
 - Lean parsing mode for blocks beyond the first (skips expensive script disassembly and address encoding to achieve sub-60s runtimes on 84-block files)
+- Streaming block parser (reads one block at a time instead of loading full blk files into memory)
 - Undo data matching by non-coinbase tx count with SHA256d checksum disambiguation for duplicates
 - Deterministic output (no timestamps, no random ordering)
 
@@ -108,18 +109,21 @@ CoinJoin is a privacy technique where multiple users combine their transactions 
 
 **How it is detected/computed:**
 Checks for:
-- At least 3 inputs (`len(vin) >= 3`)
-- At least 3 outputs with identical values (equal-output CoinJoin pattern)
+- At least `COINJOIN_MIN_INPUTS` inputs (default 2)
+- At least `COINJOIN_MIN_EQUAL_OUTPUTS` outputs with identical values (default 2)
+- For 2-party CoinJoins (exactly 2 equal outputs), stricter filters apply: equal outputs must represent ≥30% of total value AND ≥40% of output count to reduce false positives
 
 Equal values are counted using exact satoshi comparison.
 
 **Confidence model:**
-High for classic CoinJoin (Wasabi, JoinMarket). Lower confidence for PayJoin or equal-output consolidations.
+- High: ≥5 equal outputs with ≥5 inputs, or ≥3 equal outputs forming majority of outputs
+- Medium: ≥3 equal outputs in standard configurations
+- Low: 2-party CoinJoin (stronger false-positive filters applied)
 
 **Limitations:**
 - Does not detect unequal-output CoinJoin (e.g., Knapsack mixing)
 - Large batch payments with coincidentally equal amounts may false-positive
-- Threshold of 3 may miss smaller 2-party CoinJoins
+- 2-party detection requires strong value/ratio signals to avoid false positives
 
 ---
 
@@ -130,7 +134,7 @@ Consolidation transactions sweep many small UTXOs into fewer larger ones, typica
 
 **How it is detected/computed:**
 Flagged when:
-- At least 3 inputs
+- At least `CONSOLIDATION_MIN_INPUTS` inputs (default 3)
 - At most 2 spendable (non-OP_RETURN) outputs
 - Input count significantly exceeds output count
 
@@ -166,21 +170,23 @@ Medium — strong signal when combined with no round numbers, but can't distingu
 ### 7. Peeling Chain Detection
 
 **What it detects:**
-Peeling chains are a pattern where a transaction has exactly 2 outputs with a very large value disparity (≥10:1 ratio). The large output "peels off" a small payment while most funds remain. Within-block spend chain tracking is used to identify connected peeling sequences.
+Peeling chains are a pattern where a transaction has exactly 2 outputs with significant value disparity (default threshold ≥5:1). The large output "peels off" a small payment while most funds remain. Within-block spend chain tracking is used to identify connected peeling sequences.
 
 **How it is detected/computed:**
 A block-level spend graph is built to track which transactions spend outputs of other transactions in the same block. Then for each transaction, checks:
-- At most 3 inputs (peeling chains use few inputs)
+- At most `PEELING_MAX_INPUTS` inputs (default 3)
 - Exactly 2 spendable outputs
-- Max output value / min output value ≥ 10
+- Max output value / min output value ≥ `PEELING_MIN_RATIO` (default 5)
 - Optionally: chain evidence (this tx's output is spent by another tx in the same block, or this tx spends from another peeling-like tx)
 
 **Confidence model:**
-Medium — the ratio threshold is heuristic and may miss peeling chains with closer values.
+- High: ratio ≥50, or ratio ≥10 with chain evidence
+- Medium: ratio ≥10 without chain evidence, or ratio 5-10 with chain evidence
+- Low: ratio 5-10 without chain evidence
 
 **Limitations:**
 - Exchange withdrawal batches can create similar patterns
-- A 10:1 ratio is arbitrary; real peeling chains may have smaller ratios
+- Ratios between 5:1 and 10:1 are flagged with low confidence to balance recall vs precision
 
 ---
 
@@ -190,16 +196,16 @@ Medium — the ratio threshold is heuristic and may miss peeling chains with clo
 Identifies transactions that embed arbitrary data in the blockchain using OP_RETURN outputs. Classifies the embedded protocol when possible.
 
 **How it is detected/computed:**
-Scans all outputs for `script_type == "op_return"`. When detected, attempts to classify the protocol by examining the data payload:
-- **Omni Layer**: starts with `6f6d6e69` ("omni")
-- **OpenTimestamps**: starts with `f0105a44` (OTS magic)
-- **Counterparty**: starts with `434e545250525459` ("CNTRPRTY")
-- **Stacks**: starts with `5834` or `5832` (STX markers)
-- **Runes**: starts with `5d` (OP_13 magic byte) or `d8` (Runes marker)
+Scans all outputs for `script_type == "op_return"`. When detected, attempts to classify protocol markers using extracted payload and script hex:
+- **Omni Layer**: data starts with `6f6d6e69` ("omni")
+- **OpenTimestamps**: data starts with `0109f91102`
+- **Counterparty**: data starts with `434e545250525459` ("CNTRPRTY")
+- **Stacks**: data starts with `5354` (ASCII `ST` marker)
+- **Runes**: script starts with `6a5d` (OP_RETURN + OP_13 opcode pair, validated at the opcode level rather than data prefix)
 - **Text**: valid UTF-8 content
 
 **Confidence model:**
-High for protocol detection (magic byte matching). The presence of OP_RETURN itself is definitive.
+High for protocol detection (magic byte and opcode matching). The presence of OP_RETURN itself is definitive.
 
 **Limitations:**
 - Unknown protocols are classified as "unknown_data"
@@ -230,18 +236,33 @@ Transactions are classified using a priority-based decision tree:
 
 | Priority | Classification    | Criteria |
 |----------|-------------------|----------|
+| 0        | `coinbase`        | Coinbase transaction (miner reward) |
 | 1        | `coinjoin`        | CoinJoin heuristic detected |
 | 2        | `consolidation`   | Consolidation heuristic detected |
 | 3        | `self_transfer`   | Self-transfer heuristic detected |
-| 4        | `batch_payment`   | ≥5 outputs (batch withdrawal) |
-| 5        | `simple_payment`  | ≤3 inputs, ≤3 outputs |
-| 6        | `unknown`         | All other patterns; coinbase txs |
+| 4        | `batch_payment`   | ≥3 spendable outputs (batch withdrawal) |
+| 5        | `simple_payment`  | ≤2 spendable outputs with any input count |
+| 6        | `unknown`         | All other patterns |
 
 ## Trade-offs and Design Decisions
 
 - **Lean mode**: Blocks beyond the first skip `disassemble_script()` and bech32 address encoding, reducing runtime by ~75%. Heuristics use `script_pubkey_hex` comparison instead of addresses for consistency.
 - **Undo matching**: Uses tx-count keyed lookup with checksum verification for ambiguous matches, handling files where multiple blocks have the same non-coinbase count.
 - **Zero dependencies**: All parsing, encoding (Base58, Bech32/Bech32m), and hashing (SHA-256, RIPEMD-160) implemented in pure Python for maximum portability.
+- **CIOH anti-heuristic suppression**: When CoinJoin is detected, CIOH is annotated as `suppressed=True` rather than removed — preserving the raw detection while marking it as a known false positive for downstream consumers.
+- **Signals array**: Each transaction includes a `signals` array listing all active heuristic detections with confidence and suppression state, providing richer information than the single classification label alone.
+- **Privacy score**: A synthetic 0-100 metric per block that penalizes address reuse, rewards CoinJoin usage, and accounts for round number payments and self-transfers.
+- **Fee rate histogram**: Bucket-based fee distribution (`<2`, `2-10`, `10-50`, `50-200`, `>200` sat/vB) reveals distribution shape beyond min/max/median/mean.
+- **Configurable thresholds**: Heuristic thresholds are tunable via env vars (`SHERLOCK_COINJOIN_MIN_INPUTS`, `SHERLOCK_COINJOIN_MIN_EQUAL_OUTPUTS`, `SHERLOCK_CONSOLIDATION_MIN_INPUTS`, `SHERLOCK_PEELING_MIN_RATIO`, `SHERLOCK_PEELING_MAX_INPUTS`).
+
+### Lean Mode Limitations
+
+In lean parsing mode (blocks beyond the first), the following limitations apply:
+
+- **Addresses not computed**: `cioh.unique_addresses` falls back to counting unique `script_pubkey_hex` values from prevouts. This is functionally equivalent for most cases but P2PK inputs with no prevout produce empty identifiers.
+- **Address reuse**: Uses `script_pubkey_hex` as proxy. Accuracy is equivalent for standard script types but may miss reuse across address encoding formats.
+- **Self-transfer**: Cannot use address overlap as a confidence booster since addresses aren't decoded. Detection relies entirely on script type match and round number absence.
+- **Script disassembly**: `script_asm` fields are not populated. OP_RETURN protocol detection works on raw hex, so it's unaffected.
 
 ## References
 

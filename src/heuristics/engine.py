@@ -4,6 +4,10 @@ Heuristic Engine
 Orchestrates the application of all chain analysis heuristics to a transaction.
 Each heuristic is a pure function: heuristic(tx) -> result dict with 'detected' bool.
 Some heuristics support block-level context for cross-transaction analysis.
+
+Production features:
+  - CIOH anti-heuristic: suppresses CIOH false positive when CoinJoin detected
+  - Signals array: returns list of all active detections for downstream consumers
 """
 
 from . import (
@@ -34,6 +38,12 @@ HEURISTIC_REGISTRY = [
 # List of all heuristic IDs in canonical order
 ALL_HEURISTIC_IDS = [h_id for h_id, _ in HEURISTIC_REGISTRY]
 
+# Heuristic conflict rules: when key heuristic fires, suppress value heuristics
+# as known false-positive signals.
+SUPPRESSION_RULES = {
+    'coinjoin': {'cioh'},  # CoinJoin deliberately combines inputs from different users
+}
+
 
 def set_block_context(transactions):
     """
@@ -56,6 +66,10 @@ def apply_all(tx):
     """
     Apply all registered heuristics to a transaction.
 
+    Applies anti-heuristic suppression: when CoinJoin is detected,
+    CIOH is annotated as a known false positive (suppressed=True)
+    rather than being removed from results.
+
     Args:
         tx: dict from block_parser (parse_block_tx_full or parse_coinbase_tx_full)
 
@@ -69,7 +83,33 @@ def apply_all(tx):
         except Exception:
             # Robust: never crash on a single heuristic failure
             results[h_id] = {'detected': False}
+
+    # Apply anti-heuristic suppression annotations
+    for trigger_id, suppress_ids in SUPPRESSION_RULES.items():
+        if results.get(trigger_id, {}).get('detected', False):
+            for sup_id in suppress_ids:
+                if sup_id in results and results[sup_id].get('detected', False):
+                    results[sup_id]['suppressed'] = True
+                    results[sup_id]['suppressed_by'] = trigger_id
+
     return results
+
+
+def get_active_signals(heuristic_results):
+    """
+    Extract the list of active (detected=True, not suppressed) heuristic signals.
+
+    Returns a list of dicts: [{'heuristic': id, 'confidence': level, 'suppressed': bool}]
+    """
+    signals = []
+    for h_id, result in heuristic_results.items():
+        if result.get('detected', False):
+            signals.append({
+                'heuristic': h_id,
+                'confidence': result.get('confidence', 'medium'),
+                'suppressed': result.get('suppressed', False),
+            })
+    return signals
 
 
 def is_flagged(heuristic_results):

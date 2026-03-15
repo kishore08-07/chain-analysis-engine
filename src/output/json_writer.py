@@ -3,6 +3,11 @@ JSON Output Writer
 
 Produces schema-compliant JSON conforming to the README specification.
 Ensures all required fields, types, and constraints are met.
+
+Production features:
+  - Per-tx 'signals' array showing all active heuristic detections
+  - CIOH suppression annotation when CoinJoin detected
+  - Rich heuristic detail fields for each detected heuristic
 """
 
 import json
@@ -25,23 +30,84 @@ def build_tx_entry(txid, heuristic_results, classification, **metadata):
     heuristics_out = {}
     for h_id, result in heuristic_results.items():
         entry = {'detected': result.get('detected', False)}
-        # Include extra fields for change_detection
-        if h_id == 'change_detection' and result.get('detected'):
-            if 'likely_change_index' in result:
-                entry['likely_change_index'] = result['likely_change_index']
-            if 'method' in result:
-                entry['method'] = result['method']
+
+        if result.get('detected'):
+            # Include confidence for all detected heuristics
             if 'confidence' in result:
                 entry['confidence'] = result['confidence']
-        # Include confidence for any detected heuristic
-        if result.get('detected') and 'confidence' in result and h_id != 'change_detection':
-            entry['confidence'] = result['confidence']
+
+            # CIOH suppression annotation
+            if result.get('suppressed'):
+                entry['suppressed'] = True
+                entry['suppressed_by'] = result.get('suppressed_by', '')
+
+            # Heuristic-specific detail fields
+            if h_id == 'change_detection':
+                for key in ('likely_change_index', 'method'):
+                    if key in result:
+                        entry[key] = result[key]
+
+            elif h_id == 'coinjoin':
+                for key in ('equal_output_count', 'equal_output_value_sats',
+                            'input_count', 'distinct_input_types', 'equal_output_ratio'):
+                    if key in result:
+                        entry[key] = result[key]
+
+            elif h_id == 'consolidation':
+                for key in ('input_count', 'output_count', 'types_match', 'io_ratio'):
+                    if key in result:
+                        entry[key] = result[key]
+
+            elif h_id == 'peeling_chain':
+                for key in ('ratio', 'chain_evidence', 'small_output_index', 'large_output_index'):
+                    if key in result:
+                        entry[key] = result[key]
+
+            elif h_id == 'address_reuse':
+                for key in ('input_output_overlap', 'duplicate_input_addresses',
+                            'cross_tx_reuse_count'):
+                    if key in result:
+                        entry[key] = result[key]
+
+            elif h_id == 'self_transfer':
+                for key in ('dominant_type', 'output_count', 'address_overlap'):
+                    if key in result:
+                        entry[key] = result[key]
+
+            elif h_id == 'op_return':
+                for key in ('op_return_count', 'outputs'):
+                    if key in result:
+                        entry[key] = result[key]
+
+            elif h_id == 'round_number_payment':
+                for key in ('round_output_count', 'outputs'):
+                    if key in result:
+                        entry[key] = result[key]
+
+            elif h_id == 'cioh':
+                for key in ('input_count', 'unique_addresses'):
+                    if key in result:
+                        entry[key] = result[key]
+
         heuristics_out[h_id] = entry
+
+    # Build active signals list — all detected heuristics with suppression state
+    signals = []
+    for h_id, result in heuristic_results.items():
+        if result.get('detected', False):
+            sig = {
+                'heuristic': h_id,
+                'confidence': result.get('confidence', 'medium'),
+            }
+            if result.get('suppressed'):
+                sig['suppressed'] = True
+            signals.append(sig)
 
     tx_entry = {
         'txid': txid,
         'heuristics': heuristics_out,
-        'classification': classification
+        'classification': classification,
+        'signals': signals,
     }
 
     # Optional per-tx metadata for web visualization
@@ -60,7 +126,7 @@ def build_block_entry(block_hash, block_height, tx_count, analysis_summary,
 
     Args:
         block_hash: str (64-char hex, reversed display)
-        block_height: int
+        block_height: int or None
         tx_count: int
         analysis_summary: dict from stats.compute_block_summary
         tx_entries: list of per-tx entries (optional for blocks after first)
@@ -71,7 +137,7 @@ def build_block_entry(block_hash, block_height, tx_count, analysis_summary,
     """
     entry = {
         'block_hash': block_hash,
-        'block_height': block_height if block_height is not None else 0,
+        'block_height': block_height,
         'tx_count': tx_count,
         'analysis_summary': analysis_summary,
     }

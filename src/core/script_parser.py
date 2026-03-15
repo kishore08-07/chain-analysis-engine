@@ -269,7 +269,22 @@ def classify_output_script(script_hex):
     # OP_RETURN: starts with OP_RETURN (0x6a)
     if script[0] == 0x6a:
         return 'op_return'
-    
+
+    # OP_FALSE OP_RETURN variant (0x00 0x6a) — used by some protocols
+    if script_len >= 2 and script[0] == 0x00 and script[1] == 0x6a:
+        return 'op_return'
+
+    # Bare multisig: OP_n ... OP_m OP_CHECKMULTISIG (0xae)
+    if script_len >= 3 and script[-1] == 0xae and 0x51 <= script[0] <= 0x60:
+        return 'multisig'
+
+    # Bare P2PK: <33 or 65 byte pubkey> OP_CHECKSIG (0xac)
+    if script_len in (35, 67) and script[-1] == 0xac:
+        if script_len == 35 and script[0] == 0x21:  # compressed
+            return 'p2pk'
+        if script_len == 67 and script[0] == 0x41:  # uncompressed
+            return 'p2pk'
+
     return 'unknown'
 
 
@@ -289,12 +304,20 @@ def extract_op_return_data(script_hex):
     
     script = bytes.fromhex(script_hex)
     
-    if len(script) == 0 or script[0] != 0x6a:
+    if len(script) == 0:
         return {'op_return_data_hex': '', 'op_return_data_utf8': None, 'op_return_protocol': 'unknown'}
-    
+
+    # Support both bare OP_RETURN and OP_FALSE OP_RETURN
+    if script[0] == 0x6a:
+        start = 1
+    elif len(script) >= 2 and script[0] == 0x00 and script[1] == 0x6a:
+        start = 2
+    else:
+        return {'op_return_data_hex': '', 'op_return_data_utf8': None, 'op_return_protocol': 'unknown'}
+
     # Extract all data pushes after OP_RETURN
     data_parts = []
-    i = 1  # Skip OP_RETURN
+    i = start  # Skip OP_RETURN (or OP_FALSE OP_RETURN)
     
     while i < len(script):
         opcode = script[i]

@@ -376,7 +376,8 @@ def classify_input_script(prevout_scriptpubkey_hex, scriptsig_hex, witness):
              'p2tr_keypath', 'p2tr_scriptpath', 'unknown'
     """
     prevout_type = classify_output_script(prevout_scriptpubkey_hex)
-    has_witness = len(witness) > 0
+    # Filter out empty witness items (e.g., SegWit dummy byte)
+    has_witness = any(w for w in witness) if witness else False
     scriptsig_len = len(scriptsig_hex) // 2 if scriptsig_hex else 0
     
     # P2PKH: prevout is P2PKH, has scriptSig, no witness

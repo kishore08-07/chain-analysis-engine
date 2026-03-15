@@ -24,6 +24,23 @@ OUT_DIR = os.path.join(PROJECT_ROOT, 'out')
 STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 
 
+MIME_TYPES = {
+    '.html': 'text/html; charset=utf-8',
+    '.js': 'application/javascript',
+    '.css': 'text/css',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.svg': 'image/svg+xml',
+    '.ico': 'image/x-icon',
+    '.woff': 'font/woff',
+    '.woff2': 'font/woff2',
+    '.ttf': 'font/ttf',
+    '.map': 'application/json',
+}
+
+
 class SherlockHandler(http.server.BaseHTTPRequestHandler):
     """HTTP request handler for Sherlock web visualizer."""
 
@@ -58,10 +75,34 @@ class SherlockHandler(http.server.BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-Type', content_type)
             self.send_header('Content-Length', str(len(body)))
+            self.send_header('Cache-Control', 'public, max-age=31536000, immutable')
             self.end_headers()
             self.wfile.write(body)
         except FileNotFoundError:
             self._send_json({'error': 'Not found'}, 404)
+
+    def _serve_static(self, rel_path):
+        """Serve a static file from the STATIC_DIR."""
+        # Prevent directory traversal
+        safe_path = os.path.normpath(rel_path).lstrip('/')
+        if '..' in safe_path:
+            self._send_json({'error': 'Forbidden'}, 403)
+            return
+        filepath = os.path.join(STATIC_DIR, safe_path)
+        if not os.path.isfile(filepath):
+            self._send_json({'error': 'Not found'}, 404)
+            return
+        ext = os.path.splitext(filepath)[1].lower()
+        content_type = MIME_TYPES.get(ext, 'application/octet-stream')
+        self._send_file(filepath, content_type)
+
+    def _serve_index_html(self):
+        """Serve the SPA index.html from static build, or fallback to embedded."""
+        index_path = os.path.join(STATIC_DIR, 'index.html')
+        if os.path.isfile(index_path):
+            self._send_file(index_path, 'text/html; charset=utf-8')
+        else:
+            self._send_html(get_spa_html())
 
     def do_GET(self):
         """Handle GET requests."""
@@ -77,12 +118,22 @@ class SherlockHandler(http.server.BaseHTTPRequestHandler):
             blk_stem = path[len('/api/analysis/'):]
             self._handle_analysis(blk_stem)
 
+        elif path.startswith('/assets/'):
+            self._serve_static(path[1:])  # Strip leading /
+
         elif path == '/' or path == '/index.html':
-            self._send_html(get_spa_html())
+            self._serve_index_html()
 
         else:
-            # 404 for unknown paths - redirect to SPA for client-side routing
-            self._send_html(get_spa_html())
+            # Try serving as static file first, then fallback to SPA
+            rel = path.lstrip('/')
+            static_file = os.path.join(STATIC_DIR, rel)
+            if rel and os.path.isfile(static_file):
+                ext = os.path.splitext(static_file)[1].lower()
+                content_type = MIME_TYPES.get(ext, 'application/octet-stream')
+                self._send_file(static_file, content_type)
+            else:
+                self._serve_index_html()
 
     def _handle_files_list(self):
         """Return list of available analysis files."""
@@ -396,6 +447,7 @@ SPA_HTML = r'''<!DOCTYPE html>
       coinjoin:       { bg: 'var(--purple-bg)', fg: 'var(--purple)', hex: '#bc8cff', cls: 'badge-purple' },
       self_transfer:  { bg: 'var(--pink-bg)',   fg: 'var(--pink)',   hex: '#f778ba', cls: 'badge-pink' },
       batch_payment:  { bg: 'var(--green-bg)',  fg: 'var(--green)',  hex: '#3fb950', cls: 'badge-green' },
+      coinbase:       { bg: 'var(--yellow-bg)', fg: 'var(--yellow)', hex: '#e3b341', cls: 'badge-yellow' },
       unknown:        { bg: 'var(--red-bg)',    fg: 'var(--red)',    hex: '#f85149', cls: 'badge-red' },
     };
 
@@ -1095,7 +1147,13 @@ class ReusableTCPServer(socketserver.TCPServer):
 
 
 def main():
-    port = int(os.environ.get('PORT', 3000))
+    raw_port = os.environ.get('PORT', '3000')
+    try:
+        port = int(raw_port)
+    except ValueError:
+        port = 3000
+    if port <= 0 or port > 65535:
+        port = 3000
 
     server = ReusableTCPServer(('0.0.0.0', port), SherlockHandler)
 
@@ -1115,3 +1173,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

@@ -100,6 +100,12 @@ def apply(tx):
         if addr:
             output_addrs.add(addr)
 
+    # Lean mode often has no decoded addresses. In that case, require a stricter
+    # structural pattern to avoid over-triggering on common same-type payments.
+    has_address_data = bool(input_addrs or output_addrs)
+    if not has_address_data and not (len(vin) >= 2 and len(spendable) == 1 and dominant_ratio >= 0.9):
+        return {'detected': False}
+
     # If addresses are available and there's overlap, it's a stronger signal
     addr_overlap = bool(input_addrs and output_addrs and (input_addrs & output_addrs))
 
@@ -108,11 +114,18 @@ def apply(tx):
         confidence = 'high'  # Address reuse in self-transfer is very strong signal
     elif len(vin) >= 2 and len(spendable) == 1:
         confidence = 'high'  # Multiple inputs to single same-type output = likely consolidation/self-transfer
+    elif not has_address_data:
+        confidence = 'low'
 
-    return {
+    result = {
         'detected': True,
         'dominant_type': dominant_type,
         'output_count': len(spendable),
         'address_overlap': addr_overlap,
         'confidence': confidence
     }
+
+    if not has_address_data:
+        result['lean_mode_limited'] = True
+
+    return result

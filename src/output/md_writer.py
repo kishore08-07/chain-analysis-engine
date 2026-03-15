@@ -41,6 +41,7 @@ def generate_report(file_output):
     lines.append("")
 
     # === File Overview ===
+    privacy_score = summary.get('privacy_score', 'N/A')
     lines.append("## File Overview")
     lines.append("")
     lines.append(f"| Property | Value |")
@@ -50,6 +51,7 @@ def generate_report(file_output):
     lines.append(f"| Total Transactions Analyzed | {total_txs} |")
     lines.append(f"| Flagged Transactions | {flagged} ({_pct(flagged, total_txs)}%) |")
     lines.append(f"| Heuristics Applied | {len(heuristics)} |")
+    lines.append(f"| Privacy Score | {privacy_score}/100 |")
     lines.append("")
 
     # === Summary Statistics ===
@@ -67,6 +69,20 @@ def generate_report(file_output):
     lines.append(f"| Median | {fee_stats.get('median_sat_vb', 0)} |")
     lines.append(f"| Mean | {fee_stats.get('mean_sat_vb', 0)} |")
     lines.append("")
+
+    # Fee Rate Histogram
+    fee_hist = summary.get('fee_rate_histogram', {})
+    if fee_hist and any(fee_hist.values()):
+        lines.append("### Fee Rate Histogram")
+        lines.append("")
+        lines.append("| Bucket (sat/vB) | Transactions | Percentage |")
+        lines.append("|---|---|---|")
+        total_hist = sum(fee_hist.values())
+        for bucket in ('<2', '2-10', '10-50', '50-200', '>200'):
+            count = fee_hist.get(bucket, 0)
+            pct = _pct(count, total_hist)
+            lines.append(f"| {bucket} | {count} | {pct}% |")
+        lines.append("")
 
     # Script Type Breakdown
     script_dist = summary.get('script_type_distribution', {})
@@ -116,6 +132,8 @@ def generate_report(file_output):
         block_script_dist = block_summary.get('script_type_distribution', {})
         block_timestamp = block.get('timestamp')
 
+        block_privacy = block_summary.get('privacy_score', 'N/A')
+
         lines.append(f"## Block {i + 1}: Height {block_height}")
         lines.append("")
         lines.append(f"| Property | Value |")
@@ -127,6 +145,7 @@ def generate_report(file_output):
             lines.append(f"| Timestamp | {ts_str} |")
         lines.append(f"| Transaction Count | {tx_count} |")
         lines.append(f"| Flagged Transactions | {block_flagged} ({_pct(block_flagged, tx_count)}%) |")
+        lines.append(f"| Privacy Score | {block_privacy}/100 |")
         lines.append(f"| Min Fee Rate | {block_fee.get('min_sat_vb', 0)} sat/vB |")
         lines.append(f"| Max Fee Rate | {block_fee.get('max_sat_vb', 0)} sat/vB |")
         lines.append(f"| Median Fee Rate | {block_fee.get('median_sat_vb', 0)} sat/vB |")
@@ -170,7 +189,7 @@ def generate_report(file_output):
                 lines.append(f"| {cls} | {count} | {pct}% |")
             lines.append("")
 
-        # Notable transactions — only available for blocks with tx_entries
+        # Notable transactions / observations
         txs = block.get('transactions', [])
         if txs:
             notable = _find_notable_transactions(txs)
@@ -179,6 +198,15 @@ def generate_report(file_output):
                 lines.append("")
                 for note in notable[:15]:  # Limit to 15
                     lines.append(f"- **`{note['txid'][:16]}...`** — {note['reason']}")
+                lines.append("")
+        else:
+            # Lean-mode blocks: generate summary-based notable observations
+            observations = _summary_notable(block_summary, tx_count)
+            if observations:
+                lines.append(f"### Notable Observations (Block {i + 1})")
+                lines.append("")
+                for obs in observations:
+                    lines.append(f"- {obs}")
                 lines.append("")
 
     # === Footer ===
@@ -211,6 +239,47 @@ def _heuristic_name(h_id):
         'round_number_payment': 'Round Number Payment',
     }
     return names.get(h_id, h_id)
+
+
+def _summary_notable(block_summary, tx_count):
+    """Generate notable observations from block summary (for lean-mode blocks)."""
+    obs = []
+    if not block_summary or tx_count == 0:
+        return obs
+
+    h_counts = block_summary.get('heuristic_detection_counts', {})
+    class_dist = block_summary.get('classification_distribution', {})
+
+    # Highlight significant heuristic detections
+    for h_id, count in sorted(h_counts.items(), key=lambda x: -x[1]):
+        if count > 0:
+            pct = count / tx_count * 100
+            if h_id == 'coinjoin' and count > 0:
+                obs.append(f"**CoinJoin** detected in {count} transactions ({pct:.1f}%)")
+            elif h_id == 'consolidation' and count >= 5:
+                obs.append(f"**Consolidation** pattern in {count} transactions ({pct:.1f}%)")
+            elif h_id == 'address_reuse' and pct > 5:
+                obs.append(f"**Address reuse** detected in {count} transactions ({pct:.1f}%) — privacy risk")
+            elif h_id == 'peeling_chain' and count >= 3:
+                obs.append(f"**Peeling chain** patterns in {count} transactions")
+            elif h_id == 'op_return' and count >= 10:
+                obs.append(f"**OP_RETURN** data embedded in {count} transactions")
+
+    # Highlight dominant classification
+    for cls, count in sorted(class_dist.items(), key=lambda x: -x[1]):
+        pct = count / tx_count * 100
+        if cls == 'batch_payment' and pct > 10:
+            obs.append(f"High batch payment activity: {count} transactions ({pct:.1f}%)")
+        elif cls == 'self_transfer' and pct > 5:
+            obs.append(f"Self-transfer activity: {count} transactions ({pct:.1f}%)")
+
+    # Fee rate observations
+    fee_stats = block_summary.get('fee_rate_stats', {})
+    max_fee = fee_stats.get('max_sat_vb', 0)
+    if max_fee > 500:
+        obs.append(f"High fee rate observed: max {max_fee} sat/vB")
+
+    return obs[:10]  # Cap at 10 observations
 
 
 def _find_notable_transactions(tx_entries):

@@ -15,6 +15,8 @@ Detection criteria:
   - Optionally tracks spend chains within the same block
 """
 
+from .config import PEELING_MAX_INPUTS, PEELING_MIN_RATIO
+
 # Block-level spend graph for chain tracking
 _block_spend_graph = {}  # txid -> set of output txids that spend this tx's outputs
 
@@ -59,7 +61,7 @@ def apply(tx):
     vout = tx.get('vout', [])
 
     # Peeling chains typically have few inputs (1-3)
-    if len(vin) > 3:
+    if len(vin) > PEELING_MAX_INPUTS:
         return {'detected': False}
 
     # Filter spendable outputs
@@ -73,16 +75,21 @@ def apply(tx):
     val_a = spendable[0].get('value_sats', 0)
     val_b = spendable[1].get('value_sats', 0)
 
-    if val_a == 0 or val_b == 0:
+    if val_a == 0 and val_b == 0:
         return {'detected': False}
 
     # Check value asymmetry
     larger = max(val_a, val_b)
     smaller = min(val_a, val_b)
 
-    ratio = larger / smaller if smaller > 0 else 0
+    # Guard against division by zero — if one output is 0, the ratio is infinite
+    if smaller == 0:
+        ratio = float('inf')
+    else:
+        ratio = larger / smaller
 
-    if ratio >= 10:
+    # Threshold is configurable; default is 5:1 to catch exchange hot wallet sweeps.
+    if ratio >= PEELING_MIN_RATIO:
         small_idx = 0 if val_a < val_b else 1
         large_idx = 1 - small_idx
 
@@ -100,20 +107,29 @@ def apply(tx):
 
         chain_evidence = has_chain_successor or has_chain_predecessor
 
-        if ratio >= 50:
+        # Graduated confidence based on ratio magnitude and chain evidence
+        if ratio >= 50 or ratio == float('inf'):
             confidence = 'high'
-        elif chain_evidence:
+        elif ratio >= 10 and chain_evidence:
             confidence = 'high'
-        else:
+        elif ratio >= 10:
             confidence = 'medium'
+        elif chain_evidence:
+            confidence = 'medium'
+        else:
+            confidence = 'low'
+
+        # Cap ratio for JSON serialization (infinity is not valid JSON)
+        display_ratio = min(ratio, 999999.0) if ratio != float('inf') else 999999.0
 
         return {
             'detected': True,
             'small_output_index': small_idx,
             'large_output_index': large_idx,
-            'ratio': round(ratio, 1),
+            'ratio': round(display_ratio, 1),
             'chain_evidence': chain_evidence,
             'confidence': confidence
         }
 
     return {'detected': False}
+

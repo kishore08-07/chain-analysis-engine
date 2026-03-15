@@ -109,23 +109,6 @@ def apply(tx):
         val_b = out_b.get('value_sats', 0)
 
         if val_a != val_b:
-            # If one matches input script type and the other doesn't
-            if dominant_input_type:
-                if out_a.get('script_type') == dominant_input_type and out_b.get('script_type') != dominant_input_type:
-                    return {
-                        'detected': True,
-                        'likely_change_index': idx_a,
-                        'method': 'script_type_match',
-                        'confidence': 'medium'
-                    }
-                if out_b.get('script_type') == dominant_input_type and out_a.get('script_type') != dominant_input_type:
-                    return {
-                        'detected': True,
-                        'likely_change_index': idx_b,
-                        'method': 'script_type_match',
-                        'confidence': 'medium'
-                    }
-
             # Larger output is likely change (common in peeling patterns)
             if val_a > val_b:
                 change_idx = idx_a

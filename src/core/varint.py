@@ -12,6 +12,10 @@ Reference: https://developer.bitcoin.org/reference/transactions.html#compactsize
 
 import struct
 
+# Sanity cap — no single Bitcoin entity (tx count, script length, etc.)
+# should exceed this in valid chain data
+MAX_VARINT = 4_000_000
+
 
 def read_varint(data, offset=0):
     """

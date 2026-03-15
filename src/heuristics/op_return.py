@@ -32,10 +32,11 @@ def apply(tx):
             data_hex = o.get('op_return_data_hex', '')
             protocol = o.get('op_return_protocol', 'unknown')
             data_utf8 = o.get('op_return_data_utf8')
+            script_hex = o.get('script_pubkey_hex', '')
 
             # Enhanced protocol detection
             if protocol == 'unknown' and data_hex:
-                protocol = _classify_protocol(data_hex, data_utf8)
+                protocol = _classify_protocol(data_hex, data_utf8, script_hex)
 
             op_return_outputs.append({
                 'index': i,
@@ -55,7 +56,7 @@ def apply(tx):
     return {'detected': False}
 
 
-def _classify_protocol(data_hex, data_utf8=None):
+def _classify_protocol(data_hex, data_utf8=None, script_hex=''):
     """Classify OP_RETURN data by protocol prefix."""
     if not data_hex:
         return 'unknown'
@@ -78,10 +79,14 @@ def _classify_protocol(data_hex, data_utf8=None):
     if data_lower.startswith('5354'):
         return 'stacks'
 
-    # RUNES protocol — OP_13 magic byte (0x5d) as first byte of data push,
-    # or the older convention of 'd8' prefix
-    if data_lower.startswith('5d') or data_lower.startswith('d8'):
-        return 'runes'
+    # RUNES protocol — uses OP_RETURN OP_13 in the scriptPubKey.
+    # OP_13 is opcode 0x5d. The script pattern is: 6a 5d <data>
+    # We check the scriptPubKey for OP_RETURN (6a) followed by OP_13 (5d)
+    # rather than checking the data prefix (where 0x5d is just a common byte).
+    if script_hex and len(script_hex) >= 4:
+        script_lower = script_hex.lower()
+        if script_lower.startswith('6a5d'):
+            return 'runes'
 
     # Check for UTF-8 text content
     if data_utf8 and all(32 <= ord(c) <= 126 for c in data_utf8):

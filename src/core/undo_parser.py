@@ -202,7 +202,7 @@ def parse_single_block_undo(data, offset):
     """
     num_txs, offset = read_varint(data, offset)
 
-    if num_txs > 100000:
+    if num_txs > 500000:
         raise ValueError(f"Unreasonable tx count in undo: {num_txs}")
 
     block_undo = []
@@ -226,7 +226,7 @@ def parse_tx_undo(data, offset):
     """
     num_inputs, offset = read_varint(data, offset)
 
-    if num_inputs > 10000:
+    if num_inputs > 100000:
         raise ValueError(f"Unreasonable input count in undo: {num_inputs}")
 
     prevouts = []

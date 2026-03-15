@@ -9,6 +9,7 @@ Reference:
 - https://github.com/bitcoin/bitcoin/blob/master/src/primitives/block.h
 """
 
+import os
 import struct
 from .varint import read_varint, encode_varint
 from .crypto import double_sha256, reverse_bytes
@@ -47,6 +48,37 @@ def apply_xor_decryption(data, xor_key):
     data_int = int.from_bytes(data, 'big')
     key_int = int.from_bytes(full_key, 'big')
     return (data_int ^ key_int).to_bytes(data_len, 'big')
+
+
+def apply_xor_decryption_with_offset(data, xor_key, offset):
+    """
+    Apply XOR decryption to a chunk that starts at a specific file offset.
+
+    This enables streaming block parsing without loading the whole file in RAM.
+    """
+    if not xor_key:
+        return data
+    if not data:
+        return data
+
+    key_len = len(xor_key)
+    if key_len == 0:
+        return data
+
+    out = bytearray(len(data))
+    for i, b in enumerate(data):
+        out[i] = b ^ xor_key[(offset + i) % key_len]
+    return bytes(out)
+
+
+def _read_exact_decrypted(fh, size, xor_key, offset):
+    """Read exactly `size` bytes (or fewer at EOF) and decrypt with offset."""
+    raw = fh.read(size)
+    if not raw:
+        return b'', offset
+    if xor_key:
+        raw = apply_xor_decryption_with_offset(raw, xor_key, offset)
+    return raw, offset + len(raw)
 
 
 def parse_block_header(header_bytes):
@@ -107,12 +139,9 @@ def parse_blocks_from_file(blk_file_path, undo_data=None, network='mainnet', xor
         except Exception:
             xor_key = b''
 
-    with open(blk_file_path, 'rb') as f:
-        data = f.read()
-
-    # Apply XOR decryption if key is present and non-zero
-    if xor_key and any(b != 0 for b in xor_key):
-        data = apply_xor_decryption(data, xor_key)
+    # Normalize zero XOR key to "no decryption"
+    if xor_key and not any(b != 0 for b in xor_key):
+        xor_key = b''
 
     # Build undo lookup by num_txs for matching
     undo_lookup = {}
@@ -124,68 +153,89 @@ def parse_blocks_from_file(blk_file_path, undo_data=None, network='mainnet', xor
             undo_lookup[key].append(entry)
 
     blocks = []
-    offset = 0
+    offset = 0  # Plaintext offset in blk file
     has_errors = False
     block_idx = 0
 
-    while offset < len(data):
-        if offset + 4 > len(data):
-            break
+    file_size = os.path.getsize(blk_file_path)
 
-        magic = data[offset:offset + 4]
-        if magic != MAINNET_MAGIC and magic != TESTNET_MAGIC:
-            # Scan forward for next magic bytes (handles padding/garbage between blocks)
-            found = False
-            scan_limit = min(offset + 16, len(data) - 4)
-            for scan in range(offset + 1, scan_limit + 1):
-                if data[scan:scan + 4] in (MAINNET_MAGIC, TESTNET_MAGIC):
-                    offset = scan
-                    found = True
+    with open(blk_file_path, 'rb') as f:
+        # Prime 4-byte rolling window for magic-byte scanning.
+        magic_window, offset = _read_exact_decrypted(f, 4, xor_key, offset)
+
+        while len(magic_window) == 4:
+            # Scan forward byte-by-byte until we find a valid network magic.
+            if magic_window not in (MAINNET_MAGIC, TESTNET_MAGIC):
+                next_b, offset = _read_exact_decrypted(f, 1, xor_key, offset)
+                if len(next_b) != 1:
                     break
-            if not found:
-                break
-            continue
+                magic_window = magic_window[1:] + next_b
+                continue
 
-        offset += 4
-
-        if offset + 4 > len(data):
-            break
-        block_size = struct.unpack('<I', data[offset:offset + 4])[0]
-        offset += 4
-
-        if block_size == 0 or block_size > 4200000:
-            break
-
-        if offset + block_size > len(data):
-            break
-        block_data = data[offset:offset + block_size]
-        offset += block_size
-
-        # Match undo data to this block using tx count and checksum
-        block_undo = _find_matching_undo(block_data, undo_lookup)
-
-        # Determine if this block needs full tx detail (script_asm, etc.)
-        lean = True
-        if full_tx_block_indices is None or block_idx in full_tx_block_indices:
-            lean = False
-
-        try:
-            block_result = parse_single_block(block_data, block_undo, network, lean=lean)
-            blocks.append(block_result)
-            # Track errors from parsed blocks (e.g. Merkle mismatch)
-            if not block_result.get('ok', False):
+            size_bytes, offset = _read_exact_decrypted(f, 4, xor_key, offset)
+            if len(size_bytes) != 4:
+                # Truncated size field at EOF.
                 has_errors = True
-        except Exception as e:
-            has_errors = True
-            blocks.append({
-                'ok': False,
-                'error': {
-                    'code': 'BLOCK_PARSE_ERROR',
-                    'message': str(e)
-                }
-            })
-            # Continue parsing remaining blocks rather than aborting
-        block_idx += 1
+                break
+
+            block_size = struct.unpack('<I', size_bytes)[0]
+            if block_size == 0 or block_size > 4200000:
+                has_errors = True
+                # Continue scanning from the next byte to resync.
+                next_b, offset = _read_exact_decrypted(f, 1, xor_key, offset)
+                if len(next_b) != 1:
+                    break
+                magic_window = size_bytes[1:] + next_b
+                continue
+
+            block_data, offset = _read_exact_decrypted(f, block_size, xor_key, offset)
+            if len(block_data) != block_size:
+                # Truncated block — warn and stop
+                import sys
+                available = len(block_data)
+                print(
+                    f"Warning: truncated block at offset {offset - available}: "
+                    f"need {block_size} bytes but only {available} available",
+                    file=sys.stderr,
+                )
+                has_errors = True
+                break
+
+            # Match undo data to this block using tx count and checksum
+            block_undo = _find_matching_undo(block_data, undo_lookup)
+
+            # Determine if this block needs full tx detail (script_asm, etc.)
+            lean = True
+            if full_tx_block_indices is None or block_idx in full_tx_block_indices:
+                lean = False
+
+            try:
+                block_result = parse_single_block(block_data, block_undo, network, lean=lean)
+                blocks.append(block_result)
+                # Track errors from parsed blocks (e.g. Merkle mismatch)
+                if not block_result.get('ok', False):
+                    has_errors = True
+            except Exception as e:
+                has_errors = True
+                blocks.append({
+                    'ok': False,
+                    'error': {
+                        'code': 'BLOCK_PARSE_ERROR',
+                        'message': str(e)
+                    }
+                })
+                # Continue parsing remaining blocks rather than aborting
+            block_idx += 1
+
+            # Read next 4-byte window for the following block magic.
+            magic_window, offset = _read_exact_decrypted(f, 4, xor_key, offset)
+
+    # Warn about trailing bytes that were not consumed
+    if offset < file_size:
+        trailing = file_size - offset
+        if trailing > 4:  # Ignore small padding (≤ 4 bytes)
+            import sys
+            print(f"Warning: {trailing} trailing bytes ignored after parsing {len(blocks)} blocks", file=sys.stderr)
 
     return blocks, has_errors
 
@@ -234,7 +284,9 @@ def _find_matching_undo(block_data, undo_lookup):
                     del undo_lookup[non_coinbase]
                 return cand['tx_undos']
 
-    # Fallback: use first candidate
+    # Fallback: use first candidate (checksum disambiguation failed)
+    import sys
+    print(f"Warning: undo checksum disambiguation failed for block with {non_coinbase} non-coinbase txs; using first candidate", file=sys.stderr)
     entry = candidates.pop(0)
     if not candidates:
         del undo_lookup[non_coinbase]
@@ -322,7 +374,7 @@ def parse_single_block(block_data, block_undo, network, lean=False):
     fee_rate_sum = 0
     fee_rate_count = 0
     for tx in transactions[1:]:
-        if tx.get('ok', False) and tx.get('vbytes', 0) > 0 and tx.get('fee_sats', 0) > 0:
+        if tx.get('ok', False) and tx.get('vbytes', 0) > 0 and tx.get('fee_sats', 0) >= 0:
             fee_rate_sum += tx['fee_sats'] / tx['vbytes']
             fee_rate_count += 1
     avg_fee_rate = fee_rate_sum / fee_rate_count if fee_rate_count > 0 else 0
@@ -361,9 +413,12 @@ def extract_transaction_bytes(data, offset):
     # Version
     offset += 4
 
-    # Check for SegWit marker
+    # Check for SegWit marker (0x00 marker + 0x01 flag)
+    # Guard: the byte after the flag must be a valid input count (> 0)
+    # to distinguish from a non-SegWit tx with 0 inputs (invalid but possible in malformed data)
     is_segwit = False
-    if offset + 2 <= len(data) and data[offset] == 0x00 and data[offset + 1] == 0x01:
+    if (offset + 2 <= len(data) and data[offset] == 0x00 and data[offset + 1] == 0x01
+            and offset + 2 < len(data) and data[offset + 2] != 0x00):
         is_segwit = True
         offset += 2
 
@@ -770,12 +825,17 @@ def parse_block_tx_full(tx_bytes, undo_prevouts, network='mainnet', lean=False):
         vout_data.append(vout_entry)
 
     # Fee calculation
-    # In block mode, undo data may not perfectly align (different block counts,
-    # partial prevouts), so we clamp negative fees to 0 rather than erroring.
-    fee = total_input_value - total_output_value if undo_prevouts else 0
-    if fee < 0:
-        fee = 0  # Undo data misalignment — clamp rather than error
-    fee_rate = fee / vbytes if vbytes > 0 and fee > 0 else 0
+    # None = undo data unavailable for this tx (no prevout values known).
+    # We distinguish None (unknown) from 0 (known-zero) so that stats code
+    # can skip unknown-fee transactions instead of silently counting them as free.
+    if undo_prevouts is None:
+        fee = None
+        fee_rate = 0
+    else:
+        fee = total_input_value - total_output_value
+        if fee < 0:
+            fee = 0  # Protection against rare undo misalignment
+        fee_rate = fee / vbytes if vbytes > 0 else 0
 
     # RBF
     rbf_signaling = any(inp['sequence'] < 0xFFFFFFFE for inp in inputs)
