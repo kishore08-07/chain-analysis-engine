@@ -178,4 +178,4 @@ def build_file_output(blk_filename, block_entries, file_summary):
 def write_json(output, filepath):
     """Write the JSON output to a file."""
     with open(filepath, 'w') as f:
-        json.dump(output, f, indent=2)
+        json.dump(output, f, separators=(',', ':'))

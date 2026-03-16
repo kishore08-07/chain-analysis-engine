@@ -29,7 +29,7 @@ def classify(tx, heuristic_results):
         str: one of the valid classification labels
     """
     if tx.get('is_coinbase', False):
-        return 'coinbase'
+        return 'unknown'
 
     vout = tx.get('vout', [])
     vin = tx.get('vin', [])
