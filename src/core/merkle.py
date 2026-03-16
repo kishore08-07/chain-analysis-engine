@@ -26,7 +26,7 @@ def compute_merkle_root(tx_hashes):
     """
     if len(tx_hashes) == 0:
         # Empty list - return zero hash
-        return b'\\x00' * 32
+        return b'\x00' * 32
     
     if len(tx_hashes) == 1:
         return tx_hashes[0]
