@@ -19,8 +19,6 @@ This challenge is deliberately open-ended on heuristics. There is no single "rig
 
 ## Deliverables
 
-You must ship **all** of the following:
-
 1. **CLI chain analyzer** — applies heuristics to every transaction in a block and produces machine-readable JSON output.
 2. **Markdown reports** — human-readable reports summarizing the analysis for each block file. Must be committed to `out/`.
 3. **Web visualizer** — interactive UI for exploring chain analysis results.
@@ -29,8 +27,6 @@ You must ship **all** of the following:
 ---
 
 ## Required repo interface
-
-Your repository must include these scripts:
 
 ### 1) `cli.sh`
 
@@ -220,9 +216,6 @@ Your web app must:
 - Visualize patterns: highlight CoinJoins, consolidations, flagged transactions.
 - Display block-level statistics: fee rate distribution, script type breakdown.
 - Serve `GET /api/health` → `200 { "ok": true }`.
-
-Recommended features (not strictly required but strongly encouraged):
-
 - Color-coded transaction classifications.
 - Interactive filtering by heuristic or classification.
 - Visual transaction graph showing input/output relationships.
@@ -232,7 +225,7 @@ Recommended features (not strictly required but strongly encouraged):
 
 ## Committed outputs
 
-Unlike Challenges 1 and 2, you **must commit the `out/` directory** to your repository. This directory should contain:
+Unlike Challenges 1 and 2, **must commit the `out/` directory** to repository. This directory should contain:
 
 - `out/<blk_stem>.json` for each block file in the fixtures (e.g., `out/blk04330.json`).
 - `out/<blk_stem>.md` for each block file in the fixtures (e.g., `out/blk04330.md`).
