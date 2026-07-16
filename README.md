@@ -1,4 +1,3 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/BKxF-kj7)
 # Week 3 Challenge: Sherlock
 
 Build a chain analysis engine that applies chain-analysis heuristics to a dataset of Bitcoin transactions from real block data, a web visualizer to surface and display the results, and Markdown reports documenting your findings.
@@ -26,7 +25,6 @@ You must ship **all** of the following:
 2. **Markdown reports** — human-readable reports summarizing the analysis for each block file. Must be committed to `out/`.
 3. **Web visualizer** — interactive UI for exploring chain analysis results.
 4. **APPROACH.md** — documents your heuristics, architecture, trade-offs, and references.
-5. **Demo video** — a screen recording of your web UI walkthrough, linked in `demo.md`.
 
 ---
 
@@ -213,23 +211,6 @@ You must implement **at least 5** of the following heuristics. The `cioh` and `c
 
 ---
 
-## APPROACH.md requirements
-
-You must include an `APPROACH.md` file in the repository root that documents:
-
-1. **Heuristics Implemented** — for each heuristic:
-   - What it detects
-   - How you detect/compute it
-   - Your confidence model (how you assess reliability)
-   - Known limitations (false positives, false negatives, edge cases)
-2. **Architecture overview** — how your code is organized, what languages/frameworks you used, how data flows from raw block files to JSON + Markdown output.
-3. **Trade-offs and design decisions** — accuracy vs performance, simplicity vs coverage, and any other significant choices.
-4. **References** — BIPs, papers, blog posts, or documentation you used.
-
-The file must be at least 500 bytes.
-
----
-
 ## Web visualizer requirements
 
 Your web app must:
@@ -260,26 +241,6 @@ The grader verifies that these files exist and are reproducible.
 
 ---
 
-## Demo video
-
-Include a link to your demo video in `demo.md` at the repository root. The file should contain only the link.
-
-- **Where to upload:** YouTube, Loom, or Google Drive. The link must be viewable by evaluators without requesting access (public or unlisted is fine; no "request access" links).
-- **What to record:** a screen recording of your **web UI** walkthrough (no code walkthrough; don't spend time scrolling through source files).
-- **What to demonstrate:** use your UI to analyze at least one block from the provided fixtures and walk through the chain analysis results.
-- **How to explain:** speak as if to a non-technical person who wants to understand what chain analysis reveals about Bitcoin transactions.
-- **Topics your walkthrough must cover (using the UI):**
-  - What chain analysis is and why it matters for Bitcoin privacy
-  - Common Input Ownership Heuristic — what it assumes and what it reveals
-  - Change detection — how your tool identifies likely change outputs
-  - At least one other heuristic you implemented and what it found
-  - Transaction classification — how your tool categorizes transactions
-  - Block-level statistics — fee rates, script type distribution, flagged transaction counts
-  - A specific interesting transaction from the block data and what your analysis reveals about it
-- **Hard limit:** the video must be strictly **less than 2 minutes** long.
-
----
-
 ## Acceptance criteria
 
 - `cli.sh --block` succeeds on all provided block fixtures
@@ -296,37 +257,6 @@ Include a link to your demo video in `demo.md` at the repository root. The file 
 - Demo video link is included in `demo.md`
 - Errors are returned as structured JSON with non-empty `error.code` and `error.message`
 
----
-
-## Evaluation criteria
-
-Evaluation happens in two phases:
-
-### Phase 1: Automated evaluation (before deadline)
-
-- **Schema validation:** JSON output is checked for required fields, correct types, and valid values.
-- **Heuristic coverage:** at least 5 heuristics applied, `cioh` and `change_detection` mandatory.
-- **Transaction validation:** `transactions` array is validated for the first block only (type check + length == tx_count). Subsequent blocks may omit it.
-- **Consistency checks:** `flagged_transactions` is valid (0 ≤ n ≤ tx_count), fee rate stats are ordered correctly, file-level aggregation matches per-block data.
-- **Report reproducibility:** committed Markdown reports exist and re-running `cli.sh` produces similar reports.
-- **Documentation:** `APPROACH.md` exists, is substantial (>500 bytes), and covers at least 5 heuristics. `demo.md` contains a valid video link.
-- **Web health check:** `web.sh` must start and respond to `GET /api/health`.
-
-### Phase 2: Manual evaluation (after deadline)
-
-- **Heuristic quality:** are the heuristics well-reasoned? Do they produce meaningful results? Are confidence levels appropriate?
-- **Report quality:** clarity, completeness, and presentation of findings in the Markdown reports.
-- **Web UI quality:** interactivity, visual design, and how well it surfaces analysis results.
-- **APPROACH.md quality:** depth of explanation, awareness of limitations, quality of references.
-- **Demo video:** coverage of required topics, clarity of explanation, adherence to the 2-minute limit.
-- **Code quality:** readability, structure, and appropriate use of abstractions.
-
----
-
-## Plagiarism policy
-
-- All submitted code must be your own original work. You may use AI coding assistants (e.g. GitHub Copilot, ChatGPT, Claude) as tools, but you must understand and be able to explain every part of your submission.
-- Copying code from other participants' submissions (current or past cohorts) is strictly prohibited.
 - Using open-source libraries and referencing public documentation (BIPs, papers, blog posts, etc.) is encouraged — that is research, not plagiarism.
 - Submissions will be checked for similarity against other participants. If two or more submissions share substantially identical logic or structure beyond what would arise from following the spec, all involved submissions may be disqualified.
 - If you are unsure whether something counts as plagiarism, ask before submitting.
