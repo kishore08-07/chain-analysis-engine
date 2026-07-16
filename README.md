@@ -254,9 +254,5 @@ The grader verifies that these files exist and are reproducible.
 - Markdown reports exist in `out/` for each block file and are reproducible
 - `APPROACH.md` exists and documents at least 5 heuristics
 - Web app launches via `web.sh` and serves `GET /api/health` → `200 { "ok": true }`
-- Demo video link is included in `demo.md`
 - Errors are returned as structured JSON with non-empty `error.code` and `error.message`
 
-- Using open-source libraries and referencing public documentation (BIPs, papers, blog posts, etc.) is encouraged — that is research, not plagiarism.
-- Submissions will be checked for similarity against other participants. If two or more submissions share substantially identical logic or structure beyond what would arise from following the spec, all involved submissions may be disqualified.
-- If you are unsure whether something counts as plagiarism, ask before submitting.
